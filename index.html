@@ -6,12 +6,90 @@
       let el;
 
       ws.onmessage = (event) => {
-        el = document.getElementById('server-time');
-        el.innerHTML = 'Server time: ' + event.data;
+        el = document.getElementById('progress-bar');
+        var percent = parseInt(event.data);
+        if (percent > 100) {
+          document.getElementById('container1').style["display"] = "none";
+          document.getElementById('container2').style["display"] = "block";
+        } else {
+          el.style["width"] = percent + "%";
+        }
+      };
+
+      function destroyIE() {
+        ws.send("destroyIE");
+      };
+
+      function reset() {
+        ws.send("reset");
+        document.getElementById('container1').style["display"] = "block";
+        document.getElementById('container2').style["display"] = "none";
       };
     </script>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+      />
   </head>
   <body>
-    <p id="server-time"></p>
+    <div id="container1">
+      <div class="percentage" style="width: 80%; margin-top: 50px; margin-left: auto; margin-right: auto; border: 1px solid black;">
+        <div id="progress-bar" style="width: 0%; height: 20px; background-color: red;"></div>
+      </div>
+      <button
+        onclick="destroyIE()"
+        class="btn btn-danger"
+        style= "display: block; width: 200px; text-align: center; margin-left: auto; margin-right: auto; margin-top: 50px; border-radius: 100px; height: 200px; font-size: 28px;">
+        Destroy IE11!
+      </button>
+    </div>
+    <div id="container2" style="display: none;">
+      <div style="margin-left: auto; margin-right: auto; margin-top: 50px; display: block; width: 50%; text-align: center;">
+        <h2>┏(-_-)┛┗(-_-﻿ )┓┗(-_-)┛┏(-_-)┓</h2>
+        <img
+          src="https://media4.giphy.com/media/26tOZ42Mg6pbTUPHW/giphy.gif?cid=ecf05e470o8pwdupb6twcqosqf7sgat9zs86ufx92j8dyr6a&rid=giphy.gif"
+          style="width: 40%;"
+        />
+
+        <div style="margin-top: 50px;">
+          <h2>
+            ┌∩┐(◣_◢)┌∩┐ Good Bye IE11! ┌∩┐(◣_◢)┌∩┐
+          </h2>
+
+          <h3>
+            We wont miss you! No More (╯°□°）╯︵ ┻━┻
+          </h3>
+
+          <div>
+            ~
+            <h4>SOT Devs (♥_♥)</h4>
+            <h4>SOT QA Devs    ̿' ̿'\̵͇̿̿\з=(◕_◕)=ε/̵͇̿̿/'̿'̿ ̿</h4>
+            <h4>SOT PMs ۜ\(סּںסּَ` )/ۜ</h4>
+            <h4>SOT PMOs 【ツ】</h4>
+            <h4>Flowrida Devs d(^o^)b</h4>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+      ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+      ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+      crossorigin="anonymous"
+      ></script>
   </body>
 </html>

@@ -11,14 +11,25 @@ const server = express()
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 const wss = new Server({ server });
+var count = 0;
 
 wss.on('connection', (ws) => {
   console.log('Client connected');
+
+  ws.on('message', (message) => {
+    if (message === "reset") {
+      count = 0;
+    } else {
+      count += 1;
+      console.log("count: " + count);
+    }
+  });
+
   ws.on('close', () => console.log('Client disconnected'));
 });
 
 setInterval(() => {
   wss.clients.forEach((client) => {
-    client.send(new Date().toTimeString());
+    client.send(count);
   });
-}, 1000);
+}, 10);
