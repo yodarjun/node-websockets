@@ -1,29 +1,94 @@
 <html>
   <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
       let HOST = location.origin.replace(/^http/, 'ws')
       let ws = new WebSocket(HOST);
       let el;
+      let name;
+      let counts;
 
       ws.onmessage = (event) => {
-        el = document.getElementById('progress-bar');
-        var percent = parseInt(event.data);
-        if (percent > 100) {
-          document.getElementById('container1').style["display"] = "none";
-          document.getElementById('container2').style["display"] = "block";
+        var message = event.data;
+        if(message.match(/register:/)) {
+          var playersJSON = message.split(":")[1];
+          var players = JSON.parse(playersJSON);
+          addPlayers(players);
         } else {
-          el.style["width"] = percent + "%";
+          el = document.getElementById('progress-bar');
+          counts = JSON.parse(message);
+          assignCounts(counts);
+          var total = parseInt(counts.total);
+          if (total > 1000) {
+            showResult();
+          } else {
+            var percent = total / 10;
+            el.style["width"] = percent + "%";
+          }
         }
       };
 
+      function showResult() {
+        document.getElementById('action-container').style["display"] = "none";
+        document.getElementById('result-container').style["display"] = "block";
+        setMaxFirer(counts);
+      };
+
+      function setMaxFirer(counts) {
+        var max = 0;
+        var maxer;
+        Object.keys(counts).forEach((key) => {
+          if(key !== "total") {
+            if (counts[key] > max) {
+              max = counts[key];
+              maxer = key;
+            }
+          }
+        });
+        document.getElementById("maxFirer").innerHTML = maxer;
+        document.getElementById("maxShots").innerHTML = max;
+      };
+
       function destroyIE() {
-        ws.send("destroyIE");
+        ws.send(name);
       };
 
       function reset() {
         ws.send("reset");
-        document.getElementById('container1').style["display"] = "block";
-        document.getElementById('container2').style["display"] = "none";
+        document.getElementById('action-container').style["display"] = "block";
+        document.getElementById('result-container').style["display"] = "none";
+      };
+
+      function resetFull() {
+        ws.send("resetFull");
+        document.getElementById('name-container').style["display"] = "block";
+        document.getElementById('action-container').style["display"] = "none";
+        document.getElementById('result-container').style["display"] = "none";
+        document.getElementById('players').innerHTML = '';
+      };
+
+      function storeName() {
+        name = document.getElementById("name").value;
+        window.localStorage.setItem("name", name);
+        ws.send("register:" + name);
+        document.getElementById('name-container').style["display"] = "none";
+        document.getElementById('action-container').style["display"] = "block";
+      };
+
+      function addPlayers(players) {
+        players.forEach((player) => {
+          if ($("#" + player).length === 0) {
+            $("#players").append("<div class='player'>" + player + ": <span id='" + player + "'></span></div>");
+          }
+        });
+      };
+
+      function assignCounts(counts) {
+        Object.keys(counts).forEach((key) => {
+          if(key !== "total") {
+            document.getElementById(key).innerHTML = counts[key];
+          }
+        });
       };
     </script>
     <link
@@ -32,10 +97,36 @@
       integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
       crossorigin="anonymous"
       />
+    <style type="text/css">
+      #players {
+        text-align: center;
+        font-size: 40px;
+      }
+
+      #name-container {
+        text-align: center;
+        margin-top: 50px;
+        font-size: 25px;
+      }
+
+      #name-container .button {
+        margin-top: 15px;
+      }
+    </style>
   </head>
   <body>
-    <div id="container1">
-      <div class="percentage" style="width: 80%; margin-top: 50px; margin-left: auto; margin-right: auto; border: 1px solid black;">
+    <div id="name-container">
+      <label for="name">Enter your name</label>
+      <div class="input">
+        <input type="text" id="name" required/>
+      </div>
+      <div class="button">
+        <button class="btn btn-success" onclick="storeName()">Lets Go!</button>
+      </div>
+    </div>
+    <div id="action-container" style="display: none;">
+      <div id="players"></div>
+      <div class="percentage" style="width: 80%; margin-top: 50px; border: 1px solid black; margin-left: auto; margin-right: auto;">
         <div id="progress-bar" style="width: 0%; height: 20px; background-color: red;"></div>
       </div>
       <button
@@ -45,7 +136,7 @@
         Destroy IE11!
       </button>
     </div>
-    <div id="container2" style="display: none;">
+    <div id="result-container" style="display: none;">
       <div style="margin-left: auto; margin-right: auto; margin-top: 50px; display: block; width: 50%; text-align: center;">
         <h2>┏(-_-)┛┗(-_-﻿ )┓┗(-_-)┛┏(-_-)┓</h2>
         <img
@@ -63,12 +154,17 @@
           </h3>
 
           <div>
-            ~
+            ~~~
             <h4>SOT Devs (♥_♥)</h4>
             <h4>SOT QA Devs ˁ˚ᴥ˚ˀ</h4>
             <h4>SOT PMs ۜ\(סּںסּَ` )/ۜ</h4>
             <h4>SOT PMOs 【ツ】</h4>
             <h4>Flowrida Devs d(^o^)b</h4>
+          </div>
+          <div>
+            ~~~
+            <h4>Max Shots Fired By: (¯`·._.·(¯`·._.·(¯`·._.· <span id="maxFirer"></span> ·._.·´¯)·._.·´¯)·._.·´¯)<h4>
+            <h4>Max Shots Fired: <span id="maxShots"></span><h4>
           </div>
         </div>
       </div>
