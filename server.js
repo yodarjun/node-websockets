@@ -48,7 +48,7 @@ setInterval(() => {
   var totalObj = { "total": total };
   var msg = { ...individualCounts, ...totalObj };
   broadcast(JSON.stringify(msg));
-}, 1000);
+}, 10);
 
 function broadcast(msg) {
   wss.clients.forEach((client) => {
